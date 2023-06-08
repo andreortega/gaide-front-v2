@@ -239,11 +239,21 @@ import { email, required, minLength, maxLength, helpers } from '@vuelidate/valid
 import { useClienteStore } from '@/store/cliente';
 
 
-// PROPS & DRAWER
-const props = defineProps(['isOpen'])
 
 // EMITS
+const props = defineProps(['isOpen'])
 const emits = defineEmits(['close', 'exibir-snackbar'])
+
+const isDrawerOpen = computed({
+  get() {
+    return props.isOpen;
+  },
+  set(value) {
+    if (value === false) {
+      emits('close');
+    }
+  }
+});
 
 // PREPARANDO STORES
 const clienteStore = useClienteStore();
@@ -254,20 +264,20 @@ const alert = 'Para cadastrar um novo cliente, preencha atentamente os dados ger
 
 // FORM
 const form = reactive({ // Estado inicial do formulário
-  name: 'asfd',
+  name: '',
   cnpj: '',
-  line_of_business: 'asdf', // null
+  line_of_business: null, // null
   street: '',
   number: '',
   complement: '',
   neighborhood: '',
-  city: 'asfasf',
-  state: 'asfd', // null
+  city: '',
+  state: null, // null
   cep: '',
-  contact_name: 'asf',
-  contact_email: 'asaf@asfd.com',
-  contact_phone: '233233',
-  contact_function: 'asf'
+  contact_name: '',
+  contact_email: '',
+  contact_phone: '',
+  contact_function: ''
 })
 
 const rules = {
@@ -370,7 +380,7 @@ const handleSubmit = async () => {
     .catch((error) => {
       emits('exibir-snackbar', error.message, 'error')
     })
-    emits('close')
+  emits('close')
 }
 
 // TESTES C/ WATCH

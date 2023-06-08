@@ -72,6 +72,48 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/licencas/:id', // ID do Empreendimento, por enquanto
+    component: () => import('@/layouts/Interno.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Licencas',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "home" */ '@/views/LicencasView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/condicionantes/:id', // ID da Licença
+    component: () => import('@/layouts/Interno.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Condicionantes',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "home" */ '@/views/CondicionantesView.vue'),
+      },
+    ],
+  },
+  {
+    path: '/atividadesdecondicionantes/:id', // ID da Condicionante
+    component: () => import('@/layouts/Interno.vue'),
+    children: [
+      {
+        path: '',
+        name: 'AtividadesDeCondicionantes',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "home" */ '@/views/AtividadesDeCondicionantesView.vue'),
+      },
+    ],
+  },
 ]
 
 const router = createRouter({

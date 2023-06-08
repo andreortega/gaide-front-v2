@@ -1,7 +1,7 @@
 // Utilities
 import { defineStore } from 'pinia';
 import  axios  from 'axios';
-import { postClient } from '../api/api';
+import { postClient, deleteClient } from '../api/api';
 
 export const useClienteStore = defineStore('cliente', {
   state: () => ({
@@ -27,7 +27,9 @@ export const useClienteStore = defineStore('cliente', {
         console.log('data', data)
         if (data.status === 200 || data.status === 201) {
           console.log('STORE entrou no response.success')
-          this.clientes.push(cliente);
+          //this.clientes.push(cliente);
+          this.clientes = null
+          this.fill()
           //return response
           return 'Cliente salvo com sucesso!'
         } else if (data.error) {
@@ -42,6 +44,34 @@ export const useClienteStore = defineStore('cliente', {
         console.error('Erro ao salvar cliente 2:', error);
         //return { success: false, error: error }
         throw new Error('Erro ao salvar cliente 3', data.error);
+      }
+    },
+
+    // removerClienteDoStore(idCliente) {
+    //   // Remover o item do estado "items" usando o índice fornecido
+    //   const index = this.clientes.value.findIndex((item) => item.id === idCliente);
+    //   this.clientes.splice(index, 1);
+    // },
+
+    async excluirCliente(idCliente) {
+      try {
+        const data = await deleteClient(idCliente);
+        console.log('data', data)
+        console.log('status', data.status)
+        //if()
+        //this.removerClienteDoStore(idCliente)
+
+        if (data.status === 200 || data.status === 201) {
+          console.log('deu status 200 ou 201 ao deletar')
+          const index = this.clientes.findIndex((item) => item.id === idCliente);
+          console.log('index',index)
+          this.clientes.splice(index, 1);
+        }
+        //return data.statusText;
+        return 'Cliente excluído com sucesso!'
+      } catch (error) {
+        console.error('Erro ao excluir cliente 2:', error);
+        throw new Error('Erro ao excluir cliente 3', data.error);
       }
     }
 

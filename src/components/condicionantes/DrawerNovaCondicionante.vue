@@ -14,7 +14,7 @@
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <h1 class="pl-3 text-h5 text-tertiary font-weight-regular">
-          Novo Empreendimento
+          Nova Condicionante
         </h1>
         <v-spacer></v-spacer>
         <!-- <v-btn
@@ -28,7 +28,6 @@
       <v-divider></v-divider>
 
       <v-container>
-
         <v-form 
           validate-on="submit lazy"
           @submit.prevent="handleSubmit"
@@ -41,58 +40,95 @@
             class="mb-6 pa-6 "
           >
             <v-row>
-              <v-col cols="12" md="6" class="pb-0">
+              <v-col cols="12" md="6">
                 <v-text-field 
-                  label="Nome do Empreendimento"
-                  v-model="form.nome"
-                  :rules="rules.nome.value"
+                  label="Número da Licença"
+                  v-model="form.numero_condicionante"
                   variant="outlined"
                 ></v-text-field>
               </v-col>
               <v-col></v-col>
             </v-row>
-          </v-sheet>
-
-          <v-sheet 
-            style="border-radius: 25px" 
-            color="grey-lighten-4"
-            class="mb-6 pa-6"
-          >
-            <h2 class="text-subtitle-1 text-tertiary font-weight-regular pb-6">
-              Detalhes do Projeto
-            </h2>
             <v-row>
-              <v-col cols="12" md="12">
-                <v-autocomplete
-                  v-model="form.localizacao"
-                  :items="['Brasília/DF', 'Planaltina/DF', 'Ceilândia/DF', 'Taguatinga/DF', 'Sobradinho/DF']"
-                  chips
-                  hide-details
-                  hide-no-data
-                  hide-selected
-                  label="Localização"
-                  multiple
-                  single-line
-                  variant="outlined"
-                ></v-autocomplete>
-              </v-col>
               <v-col cols="12" md="6">
                 <v-btn-toggle
-                  v-model="form.tipo_extensao"
+                  label="Tipo"
+                  v-model="form.tipo_condicionante"
                   rounded="50"
                   color="secondary"
                   group
                 >
-                  <v-btn value="linha">Linha (km)</v-btn>
-                  <v-btn value="area">Área (hectares)</v-btn>
+                  <v-btn value="informativa">
+                    Informativa
+                  </v-btn>
+                  <v-btn value="executiva">
+                    Executiva
+                  </v-btn>
                 </v-btn-toggle>
               </v-col>
               <v-col cols="12" md="6">
-                <v-text-field 
-                  label="Extensão"
-                  v-model="form.extensao"
+                <v-btn-toggle
+                  label="Caráter"
+                  v-model="form.carater_condicionante"
+                  rounded="50"
+                  color="secondary"
+                  group
+                >
+                  <v-btn value="geral">
+                    Geral
+                  </v-btn>
+                  <v-btn value="especifica">
+                    Específica
+                  </v-btn>
+                </v-btn-toggle>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="12">
+                <v-textarea
+                  label="Condicionante"
+                  v-model="form.condicionante"
+                  rows="3"
+                ></v-textarea>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-select 
+                  label="Status"
+                  v-model="form.status"
                   variant="outlined"
-                ></v-text-field>
+                  :items="['A iniciar', 'Em atendimento', 'Parcialmente atendida', 'Observada', 'Atendida', 'Não atendida']"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-row>
+                  <v-col class="flex-grow">
+                    <v-text-field 
+                      label="Prazo"
+                      v-model="form.prazo"
+                      variant="outlined"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col class="flex-grow">
+                    <v-btn-toggle
+                      v-model="form.tipo_prazo"
+                      rounded="50"
+                      color="secondary"
+                      group
+                    >
+                      <v-btn value="dias">
+                        Dias
+                      </v-btn>
+                      <v-btn value="meses">
+                        Meses
+                      </v-btn>
+                      <!-- <v-btn value="anos">
+                        Anos
+                      </v-btn> -->
+                    </v-btn-toggle>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
           </v-sheet>
@@ -103,31 +139,15 @@
             class="mb-6 pa-6"
           >
             <h2 class="text-subtitle-1 text-tertiary font-weight-regular pb-6">
-              Órgão Licenciador
+              Observações
             </h2>
             <v-row>
-              <v-col cols="12" md="6">
-                <v-select 
-                  label="Órgão Licenciador"
-                  v-model="form.orgao_licenciador"
-                  variant="outlined"
-                  :items="['IBAMA', 'SEMAS', 'CETESB', 'INEMA', 'SUDEMA', 'SEMACE', 'IBRAM', 'SEMAD']"
-                ></v-select>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-select 
-                  label="UF do Órgão"
-                  v-model="form.uf_orgao_licenciador"
-                  variant="outlined"
-                  :items="['AC','AL','AP','AM','BA','CE','DF','ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO']"
-                ></v-select>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field 
-                  label="Número do Processo"
-                  v-model="form.numero_processo"
-                  variant="outlined"
-                ></v-text-field>
+              <v-col cols="12" md="12">
+                <v-textarea
+                  label="Escreva suas anotações"
+                  v-model="form.observacoes"
+                  rows="3"
+                ></v-textarea>
               </v-col>
             </v-row>
           </v-sheet>
@@ -167,11 +187,21 @@
 import { ref, defineEmits, defineProps, customRef, toRefs, reactive, computed,  watch } from 'vue'
 import { useVuelidate } from '@vuelidate/core'
 import { email, required, minLength, maxLength, helpers } from '@vuelidate/validators'
-import { useEmpreendimentoStore } from '@/store/empreendimento';
+import { useCondicionanteStore } from '@/store/condicionante';
 
+// PROPS & DRAWER
+//const props = defineProps(['isOpen, idCliente'])
+//const props = defineProps(['idCliente'])
+//defineProps(['isDrawerOpen'])
+//const props = defineProps(['isOpen'])
+// const props = toRefs(defineProps({
+//   isOpen: Boolean,
+// }));
 
 // PROPS & EMITS
-const props = defineProps(['isOpen', 'idProjeto'])
+//const props = defineProps(['isOpen, idCliente'])
+//const props = defineProps(['isOpen'])
+const props = defineProps(['isOpen', 'idLicenca'])
 const emits = defineEmits(['close', 'exibir-snackbar'])
 
 console.log('props',props)
@@ -190,37 +220,39 @@ const isDrawerOpen = computed({
 //const isDrawerOpen = ref(false)
 
 // PREPARANDO STORES
-const empreendimentoStore = useEmpreendimentoStore();
+const condicionanteStore = useCondicionanteStore();
 
 // ALERT
-const alert = 'Para cadastrar um novo empreendimento, preencha atentamente os dados gerais abaixo.'
+const alert = 'Para cadastrar uma nova condicionante, preencha atentamente os dados gerais abaixo.'
 
 const menu = ref(false);
+
+// const binaryString = 'Teste binário GAIDE!'; // String binária mocada
+// const base64String = btoa(binaryString); // Converte a string binária em base64
+// console.log(base64String)
 
 // FORM
 const form = reactive({ // Estado inicial do formulário
   //id_projeto: '3c936d22-e08b-49da-9fe9-6970fffc4320',
-  id_projeto: props.idProjeto,
-  nome: '',
-  // DETALHES DO PROJETO
-  // Apenas se empreendimentos_associados é FALSE
-  localizacao: [],
-  tipo_extensao: 'linha', // 'linha' ou 'area'
-  extensao: '',
+  id_licenca: props.idLicenca,
+  numero_condicionante: '',
 
-  // ÓRGÃO LICENCIADOR
-  orgao_licenciador: null,
-  uf_orgao_licenciador: null,
-  numero_processo: '',
+  tipo_condicionante: 'informativa', // 'informativa' ou 'executiva'
+  carater_condicionante: 'geral', // 'geral' ou 'especifica'
+  condicionante: '',
+  status: null, //null,
+  
+  prazo: '',
+  tipo_prazo: 'dias', // 'dias' ou 'meses'
+  periodico: 'true', // null
+  observacoes: ''
 
-  // PRODUTOS CONTRATADOS
-  // Produto // 'EIA/RIMA', 'Inventário Florestal', 'RAS/RDPA', 'Estudos Arqueológicos', ...
-  // Data de início
-  // Data de fim
+  // PERIODICIDADE
+  
 })
 
 const rules = {
-  nome: {  },
+  numero_licenca: {  },
   seguimento: {  },
   tipo_empreendimento: {  },
   inicio_contrato: {  },
@@ -229,6 +261,10 @@ const rules = {
   // escopo_contrato: {  },
   // exclusao_escopo_contrato: {  },
 };
+
+// const handleFileUpload = (files) => {
+//   form.licenca_arquivo.value = files[0];
+// };
 
 const v$ = useVuelidate(rules, form, { $lazy: true })
 
@@ -288,7 +324,8 @@ const handleSubmit = async () => {
     return;
   }
 
-  await empreendimentoStore.novoEmpreendimento(form, props.idProjeto)
+  //console.log('ID CLIENTE', props.idCliente)
+  await condicionanteStore.novaCondicionante(form, props.idLicenca)
     .then((message) => {
       emits('exibir-snackbar', message, 'success')
       // form.value = {

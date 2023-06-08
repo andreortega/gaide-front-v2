@@ -185,11 +185,23 @@
             </h2>
             <v-row>
               <v-col cols="12" md="12">
-                <v-text-field 
+                <!-- <v-text-field 
                   label="Localização"
                   v-model="form.localizacao"
                   variant="outlined"
-                ></v-text-field>
+                ></v-text-field> -->
+                <v-autocomplete
+                  v-model="form.localizacao"
+                  :items="['Brasília/DF', 'Planaltina/DF', 'Ceilândia/DF', 'Taguatinga/DF', 'Sobradinho/DF']"
+                  chips
+                  hide-details
+                  hide-no-data
+                  hide-selected
+                  label="Localização"
+                  multiple
+                  single-line
+                  variant="outlined"
+                ></v-autocomplete>
               </v-col>
               <v-col cols="12" md="6">
                 <v-btn-toggle
@@ -223,11 +235,12 @@
             </h2>
             <v-row>
               <v-col cols="12" md="6">
+                <!-- :items="['IBAMA', 'SEMAS/PA', 'CETESB/SP', 'INEMA/BA', 'SUDEMA/PB', 'SEMACE/CE', 'IBRAM/DF', 'SEMAD/MG']" -->
                 <v-select 
                   label="Órgão Licenciador"
                   v-model="form.orgao_licenciador"
                   variant="outlined"
-                  :items="['IBAMA', 'SEMAS/PA', 'CETESB/SP', 'INEMA/BA', 'SUDEMA/PB', 'SEMACE/CE', 'IBRAM/DF', 'SEMAD/MG']"
+                  :items="['IBAMA', 'SEMAS', 'CETESB', 'INEMA', 'SUDEMA', 'SEMACE', 'IBRAM', 'SEMAD']"
                 ></v-select>
               </v-col>
               <v-col cols="12" md="6">
@@ -235,7 +248,7 @@
                   label="UF do Órgão"
                   v-model="form.uf_orgao_licenciador"
                   variant="outlined"
-                  :items="['Parque Eólico', 'Linha de Transmissão', 'Mineração', 'Porto', 'Rodovia', 'Outro']"
+                  :items="['AC','AL','AP','AM','BA','CE','DF','ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO']"
                 ></v-select>
               </v-col>
               <v-col cols="12" md="6">
@@ -267,9 +280,73 @@
                   color="secondary"
                   group
                 >
-                  <v-btn value="projetos">Projetos</v-btn>
+                  <v-btn value="projeto">Projetos</v-btn>
                   <v-btn value="empreendimentos">Empreendimentos</v-btn>
                 </v-btn-toggle>
+              </v-col>
+            </v-row>
+          </v-sheet>
+
+          <v-sheet 
+            style="border-radius: 25px" 
+            color="grey-lighten-4"
+            class="mb-6 pa-6"
+          >
+            <v-row>
+              <v-col class="pb-6">
+                <h2 class="text-subtitle-1 text-tertiary font-weight-regular">
+                  Produtos Contratados
+                </h2>
+                <div class="text-caption text-grey-darken-1">
+                  Vincule produtos e seus prazos ao projeto.
+                </div>
+              </v-col>
+              <v-col>
+                <div class="text-right">
+                  <v-btn
+                    normal
+                    size="x-small"
+                    rounded="lg"
+                    stacked
+                    color="secondary"
+                    class="ml-3"
+                    @click.stop="isDialogNovoProdutoContratadoOpen = !isDialogNovoProdutoContratadoOpen"
+                  >
+                    <v-icon size="27" class="">mdi-plus</v-icon>
+                  </v-btn>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="px-0 mx-0">
+              <v-col class="px-0 mx-0">
+                <v-list lines="two">
+                  <v-list-item class="px-0 mx-0"
+                    v-for="p in arrProdutosContratados"
+                    :key="p.produto_contratado"
+                    :title="p.produto_contratado"
+                    :subtitle="p.data_inicio+' a '+p.data_fim"
+                  >
+                    <template v-slot:prepend>
+                      <v-avatar color="grey-lighten-1">
+                        <v-icon color="white">mdi-briefcase</v-icon>
+                      </v-avatar>
+                    </template>
+
+                    <template v-slot:append>
+                      <v-btn
+                        color="grey-lighten-1"
+                        icon="mdi-circle-edit-outline"
+                        variant="text"
+                        class="px-0 mx-0"
+                      ></v-btn>
+                      <v-btn
+                        color="grey-lighten-1"
+                        icon="mdi-trash-can"
+                        variant="text"
+                      ></v-btn>
+                    </template>
+                  </v-list-item>
+                </v-list>
               </v-col>
             </v-row>
           </v-sheet>
@@ -296,6 +373,7 @@
                   label="Início da supressão"
                   v-model="form.inicio_supressao"
                   variant="outlined"
+                  type="date"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -303,6 +381,7 @@
                   label="Data da mobilização"
                   v-model="form.data_mobilizacao"
                   variant="outlined"
+                  type="date"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
@@ -316,6 +395,70 @@
                   label="Anexar proposta técnica"
                   variant="outlined"
                 ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-sheet>
+
+          <v-sheet 
+            style="border-radius: 25px" 
+            color="grey-lighten-4"
+            class="mb-6 pa-6"
+          >
+            <v-row>
+              <v-col class="pb-6">
+                <h2 class="text-subtitle-1 text-tertiary font-weight-regular">
+                  Matriz de Comunicação
+                </h2>
+                <div class="text-caption text-grey-darken-1">
+                  Vincule pessoas de contato ao projeto.
+                </div>
+              </v-col>
+              <v-col>
+                <div class="text-right">
+                  <v-btn
+                    normal
+                    size="x-small"
+                    rounded="lg"
+                    stacked
+                    color="secondary"
+                    class="ml-3"
+                    @click.stop="isDialogMatrizDeComunicacaoOpen = !isDialogMatrizDeComunicacaoOpen"
+                  >
+                    <v-icon size="27" class="">mdi-plus</v-icon>
+                  </v-btn>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row class="">
+              <v-col 
+                v-for="mc in arrMatrizDeComunicacao"
+                class="" cols="12" md="6"
+              >
+                <v-card
+                  :title="mc.nome"
+                  :subtitle="mc.funcao"
+                  class="pa-2 pb-0"
+                  flat
+                >
+                  <v-list density class="pt-0 pb-2">
+                    <v-list-item class="py-0 text-body-2">{{ mc.email }}</v-list-item>
+                    <v-list-item class="pt-0 pb-1 text-body-2">{{ mc.telefone }}</v-list-item>
+                  </v-list>
+                  <v-divider></v-divider>
+                  <v-card-actions class="justify-start py-0">
+                    <v-btn
+                        color="grey-lighten-1"
+                        icon="mdi-circle-edit-outline"
+                        variant="text"
+                        class="px-0 mx-0"
+                      ></v-btn>
+                      <v-btn
+                        color="grey-lighten-1"
+                        icon="mdi-trash-can"
+                        variant="text"
+                      ></v-btn>
+                  </v-card-actions>
+                </v-card>
               </v-col>
             </v-row>
           </v-sheet>
@@ -339,8 +482,155 @@
       </v-container>
     </v-navigation-drawer>
 
-    
+    <v-dialog
+      v-model="isDialogNovoProdutoContratadoOpen"
+      width="auto"
+    >
+      <v-card
+        class="mx-auto text-center"
+        elevation="16"
+        width="400"
+        rounded="xl"
+      >
+      <h1 class="py-4 text-h5 text-tertiary font-weight-regular">Novo Produto Contratado</h1>
+      <v-divider></v-divider>
+        <v-form 
+          validate-on="submit lazy"
+          @submit.prevent="handleSubmitProdutoContratado"
+          class="pt-3"
+        >
+          <v-row class="pa-6">
+            <v-col cols="12" md="12">
+              <v-select 
+                label="Produtos Contratados"
+                v-model="formProdutoContratado.produto_contratado"
+                variant="outlined"
+                :items="['EIA/RIMA','Inventário Florestal','RAS/RDPA','Estudos Arqueológicos']"
+              ></v-select>
+            </v-col>
+            <v-col cols="12" md="12">
+              <v-text-field 
+                label="Data de Início"
+                v-model="formProdutoContratado.data_inicio"
+                variant="outlined"
+                type="date"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="12">
+              <v-text-field 
+                label="Data de Término"
+                v-model="formProdutoContratado.data_fim"
+                variant="outlined"
+                type="date"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-divider></v-divider>
+          <v-card-actions class="justify-center">
+            <v-btn
+              color="grey medium-emphasis"
+              min-width="90"
+              rounded
+              text
+              @click="closeDialogNovoProdutoContratado"
+              class="px-4"
+              size="large"
+            >
+              Cancelar
+            </v-btn>
+            <v-btn
+              color="success"
+              min-width="90"
+              rounded
+              variant="tonal"
+              class="px-4"
+              size="large"
+              @click.stop="addProdutoContratado"
+            >
+              Salvar
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
 
+    <v-dialog
+      v-model="isDialogMatrizDeComunicacaoOpen"
+      width="auto"
+    >
+      <v-card
+        class="mx-auto text-center"
+        elevation="16"
+        width="400"
+        rounded="xl"
+      >
+      <h1 class="py-4 text-h5 text-tertiary font-weight-regular">
+        Nova Pessoa de Contato
+      </h1>
+      <v-divider></v-divider>
+        <v-form 
+          validate-on="submit lazy"
+          @submit.prevent="addMatrizDeComunicacao"
+          class="pt-3"
+        >
+          <v-row class="pa-6">
+            <v-col cols="12" md="12">
+              <v-text-field 
+                label="Nome"
+                v-model="formMatrizDeComunicacao.nome"
+                variant="outlined"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="12">
+              <v-text-field 
+                label="E-mail"
+                v-model="formMatrizDeComunicacao.email"
+                variant="outlined"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="12">
+              <v-text-field 
+                label="Telefone"
+                v-model="formMatrizDeComunicacao.telefone"
+                variant="outlined"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" md="12">
+              <v-text-field 
+                label="Função"
+                v-model="formMatrizDeComunicacao.funcao"
+                variant="outlined"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-divider></v-divider>
+          <v-card-actions class="justify-center">
+            <v-btn
+              color="grey medium-emphasis"
+              min-width="90"
+              rounded
+              text
+              @click="closeDialogMatrizDeComunicacao"
+              class="px-4"
+              size="large"
+            >
+              Cancelar
+            </v-btn>
+            <v-btn
+              color="success"
+              min-width="90"
+              rounded
+              variant="tonal"
+              class="px-4"
+              size="large"
+              @click.stop="addMatrizDeComunicacao"
+            >
+              Salvar
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
     
   </v-container>
 </template>
@@ -357,19 +647,9 @@ import { useVuelidate } from '@vuelidate/core'
 import { email, required, minLength, maxLength, helpers } from '@vuelidate/validators'
 import { useProjetoStore } from '@/store/projeto';
 
-// PROPS & DRAWER
-//const props = defineProps(['isOpen, idCliente'])
-//const props = defineProps(['idCliente'])
-//defineProps(['isDrawerOpen'])
-//const props = defineProps(['isOpen'])
-// const props = toRefs(defineProps({
-//   isOpen: Boolean,
-// }));
 
 // PROPS & EMITS
-//const props = defineProps(['isOpen, idCliente'])
-//const props = defineProps(['isOpen'])
-const props = defineProps(['isOpen'])
+const props = defineProps(['isOpen', 'idCliente'])
 const emits = defineEmits(['close', 'exibir-snackbar'])
 
 const isDrawerOpen = computed({
@@ -393,16 +673,17 @@ const alert = 'Para cadastrar um novo projeto, preencha atentamente os dados ger
 
 const menu = ref(false);
 
+
 // FORM
 const form = reactive({ // Estado inicial do formulário
-  id_cliente: '3c936d22-e08b-49da-9fe9-6970fffc4320',
-  nome_projeto: 'Projeto X',
-  //seguimento: null, // 'energia', 'industria', 'logistica', ...
+  //id_cliente: '3c936d22-e08b-49da-9fe9-6970fffc4320',
+  id_cliente: props.idCliente,
+  nome_projeto: '',
   seguimento: null, // 'energia', 'industria', 'logistica', ...
   //tipo_empreendimento: null, // 'parque eolico', 'linha de transmissao', ...
   //tipo_empreendimento: 'parque eolico', // 'parque eolico', 'linha de transmissao', ...
   inicio_contrato: '',
-  prazo: '90',
+  prazo: '',
   tipo_prazo: 'dias', // 'dias', 'meses'
   escopo_contrato: '',
   exclusao_escopo_contrato: '',
@@ -415,9 +696,9 @@ const form = reactive({ // Estado inicial do formulário
 
   // DETALHES DO PROJETO
   // Apenas se empreendimentos_associados é FALSE
-  localizacao: ['Brasília-DF', 'Planaltina-GO'],
+  localizacao: [], //['Brasília-DF', 'Planaltina-GO'],
   tipo_extensao: 'linha', // 'linha' ou 'area'
-  extensao: '120',
+  extensao: '',
 
   // PROGRAMAS VINCULADOS
   // Apenas se empreendimentos_associados é TRUE
@@ -446,7 +727,69 @@ const form = reactive({ // Estado inicial do formulário
   // Telefone
   // Função
 
-})
+});
+
+// FORM PRODUTOS CONTRATADOS
+const formProdutoContratado = reactive({
+  produto_contratado: null,
+  data_inicio: '',
+  data_fim: ''
+});
+
+const arrProdutosContratados = ref([]);
+
+const resetFormProdutoContratado = () => {
+  formProdutoContratado.produto_contratado = null;
+  formProdutoContratado.data_inicio = '';
+  formProdutoContratado.data_fim = '';
+};
+
+const addProdutoContratado = () => {
+  arrProdutosContratados.value.push({ ...formProdutoContratado });
+  resetFormProdutoContratado();
+  console.log('arrProdutosContratados', arrProdutosContratados)
+  closeDialogNovoProdutoContratado();
+};
+
+// DIALOG PRODUTO CONTRATADO
+const isDialogNovoProdutoContratadoOpen = ref(false);
+const closeDialogNovoProdutoContratado = () => {
+  isDialogNovoProdutoContratadoOpen.value = false;
+  resetFormProdutoContratado();
+};
+
+
+// FORM MATRIZ DE COMUNICAÇÃO
+const formMatrizDeComunicacao = reactive({
+  nome: '',
+  email: '',
+  telefone: '',
+  funcao: ''
+});
+
+const arrMatrizDeComunicacao = ref([]);
+
+const resetFormMatrizDeComunicacao = () => {
+  formMatrizDeComunicacao.nome = '';
+  formMatrizDeComunicacao.email = '';
+  formMatrizDeComunicacao.telefone = '';
+  formMatrizDeComunicacao.funcao = '';
+};
+
+const addMatrizDeComunicacao = () => {
+  arrMatrizDeComunicacao.value.push({ ...formMatrizDeComunicacao });
+  resetFormMatrizDeComunicacao();
+  console.log('arrMatrizDeComunicacao', arrMatrizDeComunicacao)
+  closeDialogMatrizDeComunicacao();
+};
+
+// DIALOG MATRIZ DE COMUNICAÇÃO
+const isDialogMatrizDeComunicacaoOpen = ref(false);
+const closeDialogMatrizDeComunicacao = () => {
+  isDialogMatrizDeComunicacaoOpen.value = false;
+  resetFormMatrizDeComunicacao();
+};
+
 
 const rules = {
   nome_projeto: {  },
@@ -459,7 +802,7 @@ const rules = {
   // exclusao_escopo_contrato: {  },
 };
 
-const v$ = useVuelidate(rules, form, { $lazy: true })
+const v$ = useVuelidate(rules, form, { $lazy: true });
 
 const errorMessages = {
   // empresa: {
@@ -518,19 +861,20 @@ const handleSubmit = async () => {
   }
 
   //console.log('ID CLIENTE', props.idCliente)
-  await projetoStore.novoProjeto(form)
+  await projetoStore.novoProjeto(form, props.idCliente)
     .then((message) => {
       emits('exibir-snackbar', message, 'success')
-      form.value = {
-        nome_projeto: '',
-        seguimento: null,
-        tipo_empreendimento: null,
-        inicio_contrato: '',
-        // tipo_prazo: '',
-        // prazo: '',
-        // escopo_contrato: '',
-        // exclusao_escopo_contrato: '',
-      };
+      // form.value = {
+      //   id_cliente: props.idCliente,
+      //   nome_projeto: '',
+      //   seguimento: null,
+      //   tipo_empreendimento: null,
+      //   inicio_contrato: '',
+      //   // tipo_prazo: '',
+      //   // prazo: '',
+      //   // escopo_contrato: '',
+      //   // exclusao_escopo_contrato: '',
+      // };
     })
     .catch((error) => {
       emits('exibir-snackbar', error.message, 'error')
@@ -538,8 +882,4 @@ const handleSubmit = async () => {
     emits('close')
 }
 
-// TESTES C/ WATCH
-// const watcherTest = watch([() => [props.drawer]], (newValue, oldValue) =>
-//   console.log('props.drawer', props.drawer)
-// );
 </script>
