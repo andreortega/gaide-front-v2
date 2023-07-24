@@ -1,6 +1,15 @@
 <template>
   <v-container fluid>
 
+    <v-breadcrumbs 
+      class="pt-0 px-0" 
+      :items="breadcrumbItems"
+    >
+      <template v-slot:title="{ item }" >
+        <span class="pl-0 pr-2 text-caption">{{ item.title.toUpperCase() }}</span>
+      </template>
+    </v-breadcrumbs>
+
     <v-snackbar 
       v-model="snackbar.show"
       location="top right"
@@ -214,6 +223,17 @@ import { useRoute, useRouter } from 'vue-router';
 
 // COMPONENTS
 import DrawerNovo from './DrawerNovoEmpreendimento.vue'
+
+// BREADCRUMB
+const breadcrumbItems = computed(() => {
+  return [
+    { title: 'Home', href: '/home', disabled: false, },
+    { title: 'Clientes', href: '/clientes', disabled: false, },
+    { title: 'Cliente X', href: `/projetos/f28ff055-2483-4c48-82ed-f34984cb6b6d`, disabled: false, },
+    { title: 'Projeto X', href: `/empreendimentos/${idProjeto}`,  disabled: true,  },
+  ];
+});
+const activeIndex = computed(() => { return breadcrumbItems.length - 1 } );
 
 // ROTA
 const router = useRouter();

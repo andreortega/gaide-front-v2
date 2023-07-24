@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-navigation-drawer 
-      v-model="props.isOpen"
+      v-model="isDrawerOpen"
       temporary
       location="right"
       width="720"
@@ -13,7 +13,9 @@
         >
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
-        <h1 class="pl-3 text-h5 text-tertiary font-weight-regular">Novo Cliente</h1>
+        <h1 class="pl-3 text-h5 text-tertiary font-weight-regular">
+          {{ isEditMode ? 'Editar Cliente' : 'Novo Cliente' }}
+        </h1>
         <v-spacer></v-spacer>
         <!-- <v-btn
           icon flat
@@ -214,7 +216,7 @@
               class="font-weight-medium text-h6"
               type="submit"
             >
-              Salvar
+              {{ isEditMode ? 'Atualizar Dados' : 'Adicionar Cliente' }}
             </v-btn>
           </div>
 
@@ -239,11 +241,85 @@ import { email, required, minLength, maxLength, helpers } from '@vuelidate/valid
 import { useClienteStore } from '@/store/cliente';
 
 
+// PROPS, EMITS E VARIÁVEIS
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    required: true,
+  },
+  clienteId: {
+    type: Number,
+    required: true,
+  },
+  isEditMode: {
+    type: Boolean,
+    required: true,
+  },
+  cliente: {
+    type: Object,
+    default: null,
+  },
+})
 
-// EMITS
-const props = defineProps(['isOpen'])
-const emits = defineEmits(['close', 'exibir-snackbar'])
+const emits = defineEmits([
+  'close', 
+  'exibir-snackbar'
+])
 
+//const cliente = ref(null);
+
+
+// CARREGANDO STORES
+const clienteStore = useClienteStore();
+
+
+// BUSCA CLIENTE SE TIVER "CLIENTE ID"
+watch(
+  () => props.cliente,
+  async (newValue) => {
+    // if (newValue) {
+    //   cliente.value = await clienteStore.fetchCliente(newValue);
+      
+    //   isEditMode.value = true;
+    // }
+    if (newValue) {
+      // Preencher o formulário com os dados do cliente, se estiver editando
+      form.name = newValue.name;
+      form.cnpj = newValue.cnpj;
+      form.line_of_business = newValue.line_of_business; // null
+      form.street = newValue.street;
+      form.number = newValue.number;
+      form.complement = newValue.complement;
+      form.neighborhood = newValue.neighborhood;
+      form.city = newValue.city;
+      form.state = newValue.state; // null
+      form.cep = newValue.cep;
+      form.contact_name = newValue.contact_name;
+      form.contact_email = newValue.contact_email;
+      form.contact_phone = newValue.contact_phone;
+      form.contact_function = newValue.contact_function;
+    } else {
+      // Limpar o formulário para adicionar um novo cliente
+      form.name = '';
+      form.cnpj = '';
+      form.line_of_business = null; // null
+      form.street = '';
+      form.number = '';
+      form.complement = '';
+      form.neighborhood = '';
+      form.city = '';
+      form.state = null; // null
+      form.cep = '';
+      form.contact_name = '';
+      form.contact_email = '';
+      form.contact_phone = '';
+      form.contact_function = '';
+    }
+  }
+);
+
+
+// DRAWER
 const isDrawerOpen = computed({
   get() {
     return props.isOpen;
@@ -255,8 +331,6 @@ const isDrawerOpen = computed({
   }
 });
 
-// PREPARANDO STORES
-const clienteStore = useClienteStore();
 
 // ALERT
 const alert = 'Para cadastrar um novo cliente, preencha atentamente os dados gerais abaixo.'
@@ -355,8 +429,24 @@ const handleSubmit = async () => {
     console.log('FORM INVÁLIDO')
     return;
   }
-  
-  await clienteStore.novoCliente(form)
+
+  console.log('isEditMode 2', props.isEditMode)
+
+  if(props.isEditMode) {
+    console.log('isEditMode 3', props.isEditMode)
+    await clienteStore.updateCliente(props.cliente.id, form)
+    .then((message) => {
+      emits('exibir-snackbar', message, 'success')
+      // form = {
+      //   name: '',
+      // ...
+    })
+    .catch((error) => {
+      emits('exibir-snackbar', error.message, 'error')
+    })
+
+  } else {
+    await clienteStore.addCliente(form)
     //console.log('FORM VALUE >>> ', form)
     .then((message) => {
       emits('exibir-snackbar', message, 'success')
@@ -380,6 +470,9 @@ const handleSubmit = async () => {
     .catch((error) => {
       emits('exibir-snackbar', error.message, 'error')
     })
+  }
+  
+  
   emits('close')
 }
 

@@ -1,6 +1,25 @@
 <template>
   <v-container fluid>
 
+    <v-breadcrumbs 
+      class="pt-0 px-0" 
+      :items="breadcrumbItems"
+    >
+      <template v-slot:title="{ item }" >
+        <span class="pl-0 pr-2 text-caption">{{ item.title.toUpperCase() }}</span>
+      </template>
+      <!-- <v-breadcrumbs-item
+        v-for="(item, index) in breadItems"
+        :key="index"
+        :disabled="index === activeIndex"
+        :exact="index === breadItems.length - 1"
+        :to="item.href"
+        class="pl-0 pr-2 text-caption"
+      >
+        {{ item.label }}
+      </v-breadcrumbs-item> -->
+    </v-breadcrumbs>
+
     <v-snackbar 
       v-model="snackbar.show"
       location="bottom center"
@@ -9,17 +28,27 @@
       {{ snackbar.text }}
     </v-snackbar>
 
-    <DrawerNovo
-      :isOpen="isDrawerOpen"
+    <ClienteEditDrawer
+      :is-open="isDrawerClienteOpen"
       :idCliente="idCliente"
-      @close="closeDrawer" 
+      editMode="true"
+      :cliente="cliente"
+      @close="closeDrawerClienteEditMode" 
+      @exibir-snackbar="mostrarSnackbar" 
+    />
+
+    <NovoProjetoDrawer
+      :isOpen="isDrawerProjetoOpen"
+      :idCliente="idCliente"
+      editMode="false"
+      @close="closeDrawerNovoProjeto" 
       @exibir-snackbar="mostrarSnackbar" 
     />
 
     <v-row no-gutters class="pb-0 d-flex align-center">
       <v-col class="fill-height">
         <div class="text-h4 font-weight-regular text-tertiary">
-          Projetos
+          {{ cliente?.name }}
         </div>
       </v-col>
       <v-col>
@@ -29,27 +58,109 @@
             size="72"
             stacked
             rounded
-            color="quartiary text-secondary"
+            color="secondary"
+            @click.stop="toggleDrawerClienteEditMode"
           >
-            <v-icon size="27" class="">mdi-database</v-icon>
+            <v-icon size="27" class="">mdi-pencil</v-icon>
           </v-btn>
           <v-btn
             normal
             size="72"
             stacked
             rounded
-            color="secondary"
+            color="quartiary text-secondary"
             class="ml-3"
-            @click.stop="isDrawerOpen = !isDrawerOpen"
           >
-            <v-icon size="27" class="">mdi-plus</v-icon>
+            <v-icon size="27" class="">mdi-share-variant</v-icon>
+          </v-btn>
+          <v-btn
+            normal
+            size="72"
+            stacked
+            rounded
+            color="quartiary text-secondary"
+            class="ml-3"
+          >
+            <v-icon size="27" class="">mdi-trash-can-outline</v-icon>
+          </v-btn>
+          <v-btn
+            normal
+            size="72"
+            stacked
+            rounded
+            color="quartiary text-secondary"
+            class="ml-3"
+          >
+            <v-icon size="27" class="">mdi-dots-vertical</v-icon>
           </v-btn>
         </div>
       </v-col>
     </v-row>
 
-    <v-row class="mt-0 pb-8">
-      <v-col cols="6" md="3">
+    <v-row v-if="cliente" class="mt-0 pb-8">
+      <v-col cols="12" md="4" class="">
+        <v-card
+          class="pa-2 d-flex flex-column fill-height"
+          flat
+          :elevation="isHovering ? 6 : 0"
+          v-bind="props"
+          :color="isHovering ? 'lightGreen' : undefined"
+        >
+          <v-card-text>
+            <v-row
+              no-gutters
+              class="pt-0 text-caption font-weight-medium primary--text"
+            >
+              <v-col>Ramo</v-col>
+              <v-col>CNPJ</v-col>
+            </v-row>
+            <v-row no-gutters class="pt-0 text-body-2 text-grey-darken-2">
+              <v-col>{{ cliente.line_of_business }}</v-col>
+              <v-col>{{ cliente.cnpj }}</v-col>
+            </v-row>
+            <v-row
+              no-gutters
+              class="pt-3 text-caption font-weight-medium primary--text"
+            >
+              <v-col>Pessoa de Contato</v-col>
+            </v-row>
+            <v-row no-gutters class="pt-0 text-body-2 text-grey-darken-2">
+              <v-col>
+                <div>{{ cliente.contact_name }}</div>
+                <div>{{ cliente.contact_function }}</div>
+                <div>{{ cliente.contact_email }}</div>
+                <div>{{ cliente.contact_phone }}</div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="pt-5">
+              <v-col>
+                <span>
+                  <v-chip 
+                    size="x-small" 
+                    color="black" 
+                    class="px-3"
+                  >
+                    {{ projetos?.length }}
+                  </v-chip>
+                  Projetos
+                </span>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <!-- <v-spacer></v-spacer>
+          <v-card-actions class="pb-0 pt-0">
+            <v-spacer></v-spacer>
+            <v-btn 
+              size="large" 
+              color="surface-variant" 
+              variant="text" 
+              icon="mdi-trash-can-outline"
+              @click.stop="abrirDialogExcluir(p)"
+            ></v-btn>
+          </v-card-actions> -->
+        </v-card>
+      </v-col>
+      <v-col cols="6" md="3" class="">
         <v-card
           flat
           class="text-center pt-4 pb-2"
@@ -68,8 +179,48 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <v-divider></v-divider>
+
+    <v-row no-gutters class="pt-4 pb-0 d-flex align-center">
+      <v-col class="fill-height">
+        <div class="text-h4 font-weight-regular text-tertiary">
+          Projetos
+        </div>
+      </v-col>
+      <v-col>
+      <!-- <v-col
+        v-if="projetos?.length > 0" 
+      > -->
+        <div class="text-right">
+          <v-btn
+            normal
+            size="72"
+            stacked
+            rounded
+            color="secondary"
+            @click.stop="isDrawerProjetoOpen = !isDrawerProjetoOpen"
+          >
+            <v-icon size="27" class="">mdi-plus</v-icon>
+          </v-btn>
+          <v-btn
+            normal
+            size="72"
+            stacked
+            rounded
+            color="quartiary text-secondary"
+            class="ml-3"
+          >
+            <v-icon size="27" class="">mdi-database-import</v-icon>
+          </v-btn>
+        </div>
+      </v-col>
+    </v-row>
     
-    <v-row class="pb-0">
+    <v-row 
+      v-if="projetos?.length > 0" 
+      class="pb-0"
+    >
       <v-col md="12">
         <v-responsive max-width="550">
           <v-text-field 
@@ -80,6 +231,47 @@
             prepend-inner-icon="mdi-magnify"
           ></v-text-field>
         </v-responsive>
+      </v-col>
+    </v-row>
+
+    <v-row v-if="projetos?.length == 0">
+      <v-col
+        cols="12" md="4" 
+        class="fill-height align-center"
+      >
+        <v-card
+          color="secondary"
+          class="text-center d-flex flex-column justify-center"
+          height="270"
+          rounded="xl"
+        >
+          <div>
+            <v-card-text class="pb-0">
+              <v-icon size="72">mdi-plus</v-icon>
+            </v-card-text>
+            <v-card-title>Novo Projeto</v-card-title>
+          </div>
+        </v-card>
+      </v-col>
+      <v-col
+        cols="12" md="4" 
+        class="fill-height align-center"
+      >
+        <v-card
+          variant="outlined"
+          color="grey-darken-2"
+          class="text-center d-flex flex-column justify-center"
+          height="270"
+          rounded="xl"
+          style="border-width: 3px"
+        >
+          <div>
+            <v-card-text class="pb-0" style="background-color: transparent">
+              <v-icon size="72">mdi-database-import</v-icon>
+            </v-card-text>
+            <v-card-title>Importar Projetos</v-card-title>
+          </div>
+        </v-card>
       </v-col>
     </v-row>
 
@@ -268,12 +460,25 @@
 <script setup>
 import { ref, computed, watch, onMounted } from "vue";
 import { useProjetoStore } from "@/store/projeto";
+import { useClienteStore } from "@/store/cliente";
 import { useRoute, useRouter } from 'vue-router';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
 // COMPONENTS
-import DrawerNovo from './DrawerNovoProjeto.vue'
+import ClienteEditDrawer from '../clientes/DrawerNovoCliente.vue'
+import NovoProjetoDrawer from './DrawerNovoProjeto.vue'
+
+// BREADCRUMB
+const breadcrumbItems = computed(() => {
+  return [
+    { title: 'Home', href: '/home', disabled: false, },
+    { title: 'Clientes', href: '/clientes', disabled: false, },
+    { title: `${cliente.value?.name}`, href: `/projetos/${idCliente.value}`, disabled: true, },
+    // { label: 'Projetos', route: '/projetos/category/product-details' },
+  ];
+});
+const activeIndex = computed(() => { return breadcrumbItems.length - 1 } );
 
 
 const formatDate = (value) => {
@@ -297,13 +502,31 @@ const idCliente = computed(() => route.params.id);
 
 // STORE
 const projetoStore = useProjetoStore();
-const projetos = computed(() => projetoStore.projetos);
+const clienteStore = useClienteStore();
 
-// DRAWER
-const isDrawerOpen = ref(false);
-const closeDrawer = () => {
-  isDrawerOpen.value = false;
+const projetos = computed(() => projetoStore.projetos);
+const cliente = computed(() => clienteStore.cliente);
+
+// DRAWER 1 • NOVO PROJETO
+const isDrawerProjetoOpen = ref(false);
+const closeDrawerNovoProjeto = () => {
+  isDrawerProjetoOpen.value = false;
 }
+
+// DRAWER 2 • CLIENTE EDIT MODE
+const isDrawerClienteOpen = ref(false);
+const closeDrawerClienteEditMode = () => {
+  isDrawerClienteOpen.value = false;
+}
+
+const toggleDrawerClienteEditMode = () => {
+  // const editMode = !clienteStore.editMode;
+  // console.log('const editMode',editMode)
+  // clienteStore.setEditMode(editMode);
+  isDrawerClienteOpen.value = !isDrawerClienteOpen.value
+};
+//const editMode = computed (() => { return clienteStore.editMode });
+
 
 // DIALOG
 const dialog = ref(false);
@@ -370,9 +593,18 @@ const mostrarSnackbar = (text, color) => {
   }, 3500);
 }
 
-onMounted(() => {
+const loadCliente = async () => {
+  await clienteStore.fetchCliente(idCliente.value);
+};
+
+const loadProjetos = async () => {
+  await projetoStore.fill(idCliente.value);
+};
+
+onMounted(async () => {
   //fetchItems(); // Chamada assíncrona à API ao montar o componente
-  projetoStore.fill(idCliente.value);
+  await loadCliente();
+  await loadProjetos();
 });
 
 </script>

@@ -23,6 +23,8 @@
         </v-btn> -->
       </v-sheet>
 
+      EDIT MODE: {{ props.editMode}}
+
       <v-divider></v-divider>
 
       <v-container>
@@ -649,7 +651,7 @@ import { useProjetoStore } from '@/store/projeto';
 
 
 // PROPS & EMITS
-const props = defineProps(['isOpen', 'idCliente'])
+const props = defineProps(['isOpen', 'idCliente', 'editMode'])
 const emits = defineEmits(['close', 'exibir-snackbar'])
 
 const isDrawerOpen = computed({

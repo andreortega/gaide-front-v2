@@ -1,6 +1,15 @@
 <template>
   <v-container fluid>
 
+    <v-breadcrumbs 
+      class="pt-0 px-0" 
+      :items="breadcrumbItems"
+    >
+      <template v-slot:title="{ item }" >
+        <span class="pl-0 pr-2 text-caption">{{ item.title.toUpperCase() }}</span>
+      </template>
+    </v-breadcrumbs>
+
 <!-- <v-snackbar
   v-model="snackbar.show"
   :color="snackbar.color"
@@ -22,6 +31,7 @@
 
     <DrawerNovo 
       :is-open="isDrawerOpen"
+      :editMode="editMode"
       @close="closeDrawer" 
       @exibir-snackbar="mostrarSnackbar" 
     />
@@ -241,6 +251,15 @@ import { useRoute, useRouter } from 'vue-router';
 // COMPONENTS
 import DrawerNovo from './DrawerNovoCliente.vue'
 
+// BREADCRUMB
+const breadcrumbItems = computed(() => {
+  return [
+    { title: 'Home', href: '/home', disabled: false, },
+    { title: 'Clientes', href: '/clientes', disabled: true, },
+  ];
+});
+const activeIndex = computed(() => { return breadcrumbItems.length - 1 } );
+
 // ROTA
 const router = useRouter();
 const route = useRoute();
@@ -259,6 +278,8 @@ const isDrawerOpen = ref(false);
 const closeDrawer = () => {
   isDrawerOpen.value = false;
 }
+
+const editMode = ref(false);
 
 // AUTOCOMPLETE
 //const search = ref('')

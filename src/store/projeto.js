@@ -5,7 +5,8 @@ import { postProjeto, deleteProject } from '../api/api';
 
 export const useProjetoStore = defineStore('projeto', {
   state: () => ({
-    projetos: []
+    projetos: [],
+    editMode: false,
   }),
   actions: {
     
@@ -48,6 +49,10 @@ export const useProjetoStore = defineStore('projeto', {
         //return { success: false, error: error }
         throw new Error('Erro ao salvar projeto 3', data.error);
       }
+    },
+
+    setEditMode(editMode) {
+      this.editMode = editMode;
     },
 
     async excluirProjeto(idProjeto) {

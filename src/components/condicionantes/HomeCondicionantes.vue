@@ -1,6 +1,15 @@
 <template>
   <v-container fluid>
 
+    <v-breadcrumbs 
+      class="pt-0 px-0" 
+      :items="breadcrumbItems"
+    >
+      <template v-slot:title="{ item }" >
+        <span class="pl-0 pr-2 text-caption">{{ item.title.toUpperCase() }}</span>
+      </template>
+    </v-breadcrumbs>
+
     <v-snackbar 
       v-model="snackbar.show"
       location="top right"
@@ -107,11 +116,218 @@
                     <v-hover v-slot="{ isHovering, props }">
                       <v-card 
                         v-for="c in condicionantesAIniciar"
-                        :variant="isHovering ? undefined : 'outlined'" 
-                        :color="isHovering ? 'lightGreen' : 'primary'" 
+                        variant="outlined" 
+                        color="primary"
                         class="mb-2"
                         :elevation="isHovering ? 6 : 0"
                         v-bind="props"
+                        @click="handleCardClick(c)"
+                      >
+                        <v-card-text>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Nº {{ c.numero_condicionante }}
+                          </div>
+                          <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
+                            {{ c.condicionante }}
+                          </div>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Validade {{ c.prazo }} {{ c.tipo_prazo }}
+                          </div>
+                        </v-card-text>
+                        <v-spacer></v-spacer>
+                        <v-card-actions class="pb-0 pt-0">
+                          <v-spacer></v-spacer>
+                          <v-btn 
+                            size="large" 
+                            color="surface-variant" 
+                            variant="text" 
+                            icon="mdi-trash-can-outline"
+                            @click.stop="abrirDialogExcluir(c)"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-hover>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
+                      Não Atendida
+                    </h3>
+                    <v-hover v-slot="{ isHovering, props }">
+                      <v-card 
+                        v-for="c in condicionantesNaoAtendidas"
+                        variant="outlined" 
+                        color="primary"
+                        class="mb-2"
+                        :elevation="isHovering ? 6 : 0"
+                        v-bind="props"
+                        @click="handleCardClick(c)"
+                      >
+                        <v-card-text>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Nº {{ c.numero_condicionante }}
+                          </div>
+                          <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
+                            {{ c.condicionante }}
+                          </div>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Validade {{ c.prazo }} {{ c.tipo_prazo }}
+                          </div>
+                        </v-card-text>
+                        <v-spacer></v-spacer>
+                        <v-card-actions class="pb-0 pt-0">
+                          <v-spacer></v-spacer>
+                          <v-btn 
+                            size="large" 
+                            color="surface-variant" 
+                            variant="text" 
+                            icon="mdi-trash-can-outline"
+                            @click.stop="abrirDialogExcluir(c)"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-hover>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
+                      Parcialmente Atendida
+                    </h3>
+                    <v-hover v-slot="{ isHovering, props }">
+                      <v-card 
+                        v-for="c in condicionantesParcialmenteAtendidas"
+                        variant="outlined" 
+                        v-bind="props"
+                        color="primary" 
+                        class="mb-2"
+                        @click="handleCardClick(c)"
+                      >
+                        <v-card-text>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Nº {{ c.numero_condicionante }}
+                          </div>
+                          <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
+                            {{ c.condicionante }}
+                          </div>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Validade {{ c.prazo }} {{ c.tipo_prazo }}
+                          </div>
+                        </v-card-text>
+                        <v-spacer></v-spacer>
+                        <v-card-actions class="pb-0 pt-0">
+                          <v-spacer></v-spacer>
+                          <v-btn 
+                            size="large" 
+                            color="surface-variant" 
+                            variant="text" 
+                            icon="mdi-trash-can-outline"
+                            @click.stop="abrirDialogExcluir(c)"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-hover>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
+                      Em Atendimento
+                    </h3>
+                    <v-hover v-slot="{ isHovering, props }">
+                      <v-card 
+                        v-for="c in condicionantesEmAtendimento"
+                        variant="outlined" 
+                        v-bind="props"
+                        color="primary" 
+                        class="mb-2"
+                        @click="handleCardClick(c)"
+                      >
+                        <v-card-text>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Nº {{ c.numero_condicionante }}
+                          </div>
+                          <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
+                            {{ c.condicionante }}
+                          </div>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Validade {{ c.prazo }} {{ c.tipo_prazo }}
+                          </div>
+                        </v-card-text>
+                        <v-spacer></v-spacer>
+                        <v-card-actions class="pb-0 pt-0">
+                          <v-spacer></v-spacer>
+                          <v-btn 
+                            size="large" 
+                            color="surface-variant" 
+                            variant="text" 
+                            icon="mdi-trash-can-outline"
+                            @click.stop="abrirDialogExcluir(c)"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-hover>
+                  </v-col>
+                  <v-divider vertical></v-divider>
+                  <v-col>
+                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
+                      Atendida
+                    </h3>
+                    <v-hover v-slot="{ isHovering, props }">
+                      <v-card 
+                        v-for="c in condicionantesAtendidas"
+                        variant="outlined" 
+                        :elevation="isHovering ? 6 : 0"
+                        v-bind="props"
+                        color="primary" 
+                        class="mb-2"
+                        @click="handleCardClick(c)"
+                      >
+                        <v-card-text>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Nº {{ c.numero_condicionante }}
+                          </div>
+                          <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
+                            {{ c.condicionante }}
+                          </div>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Validade {{ c.prazo }} {{ c.tipo_prazo }}
+                          </div>
+                        </v-card-text>
+                        <v-spacer></v-spacer>
+                        <v-card-actions class="pb-0 pt-0">
+                          <v-spacer></v-spacer>
+                          <v-btn 
+                            size="large" 
+                            color="surface-variant" 
+                            variant="text" 
+                            icon="mdi-trash-can-outline"
+                            @click.stop="abrirDialogExcluir(c)"
+                          ></v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-hover>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+          </v-window-item>
+          <v-window-item
+            value="2"
+          >
+            <v-card>
+              <v-container fluid>
+                <v-row>
+                  <v-col>
+                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
+                      A Observar
+                    </h3>
+                    <v-hover v-slot="{ isHovering, props }">
+                      <v-card 
+                        v-for="c in condicionantesAObservar"
+                        variant="outlined" 
+                        :elevation="isHovering ? 6 : 0"
+                        v-bind="props"
+                        color="primary" 
+                        class="mb-2"
                       >
                         <v-card-text>
                           <div class="text-grey-darken-1 text-caption font-weight-regular">
@@ -130,155 +346,30 @@
                   <v-divider vertical></v-divider>
                   <v-col>
                     <h3 class="pb-2 text-subtitle-2 font-weight-medium">
-                      Não Atendida
-                    </h3>
-                    <v-card 
-                      v-for="c in condicionantesNaoAtendidas"
-                      variant="outlined" 
-                      color="primary" 
-                      class="mb-2"
-                    >
-                      <v-card-text>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Nº {{ c.numero_condicionante }}
-                        </div>
-                        <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
-                          {{ c.condicionante }}
-                        </div>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Validade {{ c.prazo }} {{ c.tipo_prazo }}
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-divider vertical></v-divider>
-                  <v-col>
-                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
-                      Parcialmente Atendida
-                    </h3>
-                    <v-card 
-                      v-for="c in condicionantesParcialmenteAtendidas"
-                      variant="outlined" 
-                      color="primary" 
-                      class="mb-2"
-                    >
-                      <v-card-text>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Nº {{ c.numero_condicionante }}
-                        </div>
-                        <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
-                          {{ c.condicionante }}
-                        </div>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Validade {{ c.prazo }} {{ c.tipo_prazo }}
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-divider vertical></v-divider>
-                  <v-col>
-                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
-                      Em Atendimento
-                    </h3>
-                    <v-card 
-                      v-for="c in condicionantesEmAtendimento"
-                      variant="outlined" 
-                      color="primary" 
-                      class="mb-2"
-                    >
-                      <v-card-text>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Nº {{ c.numero_condicionante }}
-                        </div>
-                        <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
-                          {{ c.condicionante }}
-                        </div>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Validade {{ c.prazo }} {{ c.tipo_prazo }}
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-divider vertical></v-divider>
-                  <v-col>
-                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
-                      Atendida
-                    </h3>
-                    <v-card 
-                      v-for="c in condicionantesAtendidas"
-                      variant="outlined" 
-                      color="primary" 
-                      class="mb-2"
-                    >
-                      <v-card-text>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Nº {{ c.numero_condicionante }}
-                        </div>
-                        <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
-                          {{ c.condicionante }}
-                        </div>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Validade {{ c.prazo }} {{ c.tipo_prazo }}
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card>
-          </v-window-item>
-          <v-window-item
-            value="2"
-          >
-            <v-card>
-              <v-container fluid>
-                <v-row>
-                  <v-col>
-                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
-                      A Observar
-                    </h3>
-                    <v-card 
-                      v-for="c in condicionantesAObservar"
-                      variant="outlined" 
-                      color="primary" 
-                      class="mb-2"
-                    >
-                      <v-card-text>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Nº {{ c.numero_condicionante }}
-                        </div>
-                        <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
-                          {{ c.condicionante }}
-                        </div>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Validade {{ c.prazo }} {{ c.tipo_prazo }}
-                        </div>
-                      </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-divider vertical></v-divider>
-                  <v-col>
-                    <h3 class="pb-2 text-subtitle-2 font-weight-medium">
                       Observadas
                     </h3>
-                    <v-card 
-                      v-for="c in condicionantesObservadas"
-                      variant="outlined" 
-                      color="primary" 
-                      class="mb-2"
-                    >
-                      <v-card-text>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Nº {{ c.numero_condicionante }}
-                        </div>
-                        <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
-                          {{ c.condicionante }}
-                        </div>
-                        <div class="text-grey-darken-1 text-caption font-weight-regular">
-                          Validade {{ c.prazo }} {{ c.tipo_prazo }}
-                        </div>
-                      </v-card-text>
-                    </v-card>
+                    <v-hover v-slot="{ isHovering, props }">
+                      <v-card 
+                        v-for="c in condicionantesObservadas"
+                        variant="outlined" 
+                        :elevation="isHovering ? 6 : 0"
+                        v-bind="props"
+                        color="primary" 
+                        class="mb-2"
+                      >
+                        <v-card-text>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Nº {{ c.numero_condicionante }}
+                          </div>
+                          <div class="text-grey-darken-2 text-subtitle-1 font-weight-medium">
+                            {{ c.condicionante }}
+                          </div>
+                          <div class="text-grey-darken-1 text-caption font-weight-regular">
+                            Validade {{ c.prazo }} {{ c.tipo_prazo }}
+                          </div>
+                        </v-card-text>
+                      </v-card>
+                    </v-hover>
                   </v-col>
                   <v-divider vertical></v-divider>
                   <v-col></v-col>
@@ -386,6 +477,18 @@ import { useRoute, useRouter } from 'vue-router';
 
 // COMPONENTS
 import DrawerNovo from './DrawerNovaCondicionante.vue'
+
+// BREADCRUMB
+const breadcrumbItems = computed(() => {
+  return [
+    { title: 'Home', href: '/home', disabled: false, },
+    { title: 'Clientes', href: '/clientes', disabled: false, },
+    { title: 'Cliente X', href: `/projetos/f28ff055-2483-4c48-82ed-f34984cb6b6d`, disabled: false, },
+    { title: 'Projeto X', href: `/empreendimentos/858439c6-4372-4a15-be95-7eef31ae15e0`,  disabled: false,  },
+    { title: 'Licença X', href: `/condicionantes/${idLicenca}`,  disabled: true,  },
+  ];
+});
+const activeIndex = computed(() => { return breadcrumbItems.length - 1 } );
 
 // ROTA
 const router = useRouter();

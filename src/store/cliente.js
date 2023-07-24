@@ -5,7 +5,9 @@ import { postClient, deleteClient } from '../api/api';
 
 export const useClienteStore = defineStore('cliente', {
   state: () => ({
-    clientes: []
+    cliente: null,
+    clientes: [],
+    editMode: false,
   }),
   actions: {
     
@@ -21,7 +23,16 @@ export const useClienteStore = defineStore('cliente', {
         })
     },
 
-    async novoCliente(cliente) {
+    async fetchCliente(clienteId) {
+      try {
+        const response = await axios.get(`http://gaide-dev.us-east-1.elasticbeanstalk.com/client/${clienteId}`);
+        this.cliente = response.data;
+      } catch (error) {
+        console.error('Erro ao buscar cliente:', error);
+      }
+    },
+
+    async addCliente(cliente) {
       try {
         const data = await postClient(cliente)
         console.log('data', data)
@@ -44,6 +55,25 @@ export const useClienteStore = defineStore('cliente', {
         console.error('Erro ao salvar cliente 2:', error);
         //return { success: false, error: error }
         throw new Error('Erro ao salvar cliente 3', data.error);
+      }
+    },
+
+    setEditMode(editMode) {
+      this.editMode = editMode;
+    },
+
+    async updateCliente(id, cliente) {
+      try {
+        //await axios.put(`/api/clientes/${id}`, cliente);
+        //const response = await updateCliente(id, cliente);
+        const response = await axios.put(`http://gaide-dev.us-east-1.elasticbeanstalk.com/client/${id}`, cliente)
+        console.log('updateCliente response.data', response.data);
+        const index = this.clientes.findIndex((c) => c.id === id);
+        if (index !== -1) {
+          this.clientes[index] = response.data;
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar cliente:', error);
       }
     },
 
